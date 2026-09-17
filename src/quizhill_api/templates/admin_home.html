@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>1. Dodaj kategorię</h2>
+<form method="post" action="/admin/categories">
+  <label>Nazwa kategorii</label>
+  <input name="title" required placeholder="np. Przyroda" />
+  <label>Krótki opis</label>
+  <input name="description" placeholder="np. Rośliny i zwierzęta" />
+  <label>Adres obrazka (możesz zostawić puste)</label>
+  <input name="image_url" placeholder="https://..." />
+  <label>Ikona (zostaw domyślną, jeśli nie wiesz)</label>
+  <input name="icon" value="quiz_outlined" />
+  <button type="submit">Dodaj kategorię</button>
+</form>
+
+<h2>2. Dodaj quiz</h2>
+<form method="post" action="/admin/quizzes">
+  <label>Tytuł quizu</label>
+  <input name="title" required />
+  <label>Opis</label>
+  <input name="description" />
+  <label>Kategoria</label>
+  <select name="category_id" required>
+    {% for category in categories %}
+    <option value="{{ category.id }}">{{ category.title }}</option>
+    {% endfor %}
+  </select>
+  <label>Typ</label>
+  <select name="kind" id="kind">
+    <option value="choice">Wybór ABCD</option>
+    <option value="choiceMusical">Wybór ABCD + dźwięk</option>
+    <option value="list">Lista haseł</option>
+    <option value="listMusical">Lista haseł + dźwięk</option>
+  </select>
+  <label>Czas w sekundach (ABCD = na pytanie, lista = na cały quiz)</label>
+  <input name="time_seconds" type="number" value="6" />
+  <label>Adres obrazka</label>
+  <input name="image_url" />
+  <label>Adres pliku dźwiękowego (tylko typy dźwiękowe)</label>
+  <input name="audio_url" />
+  <label>Dłuższy opis (opcjonalnie)</label>
+  <textarea name="details" rows="3"></textarea>
+
+  <div id="list-fields">
+    <h3>Quiz listowy</h3>
+    <label>Polecenie dla gracza</label>
+    <input name="list_prompt" placeholder="Wpisz stolice Europy" />
+    <label>Hasła — każde w osobnej linii</label>
+    <textarea name="list_answers" rows="8" placeholder="Paryż&#10;Berlin&#10;Warszawa"></textarea>
+  </div>
+
+  <div id="choice-fields">
+    <h3>Pytania ABCD (wypełnij tyle, ile chcesz, max 12)</h3>
+    {% for i in range(8) %}
+    <div class="q">
+      <label>Pytanie {{ i + 1 }}</label>
+      <input name="q{{ i }}_prompt" />
+      <div class="grid">
+        <div><label>A</label><input name="q{{ i }}_a" /></div>
+        <div><label>B</label><input name="q{{ i }}_b" /></div>
+        <div><label>C</label><input name="q{{ i }}_c" /></div>
+        <div><label>D</label><input name="q{{ i }}_d" /></div>
+      </div>
+      <label>Poprawna odpowiedź (0=A, 1=B, 2=C, 3=D)</label>
+      <input name="q{{ i }}_correct" type="number" min="0" max="3" value="0" />
+    </div>
+    {% endfor %}
+  </div>
+  <button type="submit">Dodaj quiz</button>
+</form>
+
+<h2>Kategorie w bazie</h2>
+<table>
+  <tr><th>Nazwa</th><th>Id</th></tr>
+  {% for category in categories %}
+  <tr><td>{{ category.title }}</td><td>{{ category.id }}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Quizy w bazie</h2>
+<table>
+  <tr><th>Tytuł</th><th>Kategoria</th><th>Typ</th></tr>
+  {% for quiz in quizzes %}
+  <tr><td>{{ quiz.title }}</td><td>{{ quiz.category.title }}</td><td>{{ quiz.kind }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,20 @@
+services:
+  db:
+    # Neon udostępnia PostgreSQL 16 (oraz 17). Lokalnie trzymamy 16.
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: quizhill
+      POSTGRES_USER: quizhill
+      POSTGRES_PASSWORD: quizhill
+    ports:
+      - "5432:5432"
+    volumes:
+      - quizhill_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quizhill -d quizhill"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  quizhill_pgdata:
